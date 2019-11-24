@@ -1,5 +1,5 @@
 
-class books {
+class Books {
     constructor() {
 
     }
@@ -175,4 +175,4 @@ class books {
         })
     };
 }
-module.exports = new books();
+module.exports = new Books();

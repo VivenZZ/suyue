@@ -1,2 +1,6 @@
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+<form action="/api/users/register" method="post" enctype="multipart/form-data">
+    姓名：<input type="text" name="registerName"><br />
+    年龄：<input type="text" name="registerPass"><br />
+    年龄：<input type="text" name="repeatPass"><br />
+    <input type="submit" value="提交"><br />
+</form>

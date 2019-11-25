@@ -10,10 +10,13 @@
       "title": "接口文档",
       "url": "http://localhost:3000"
     },
+    "body-parser": "^1.19.0",
     "config-lite": "^2.1.0",
     "cookie-parser": "~1.4.4",
+    "crypto": "^1.0.1",
     "debug": "~2.6.9",
     "express": "~4.16.1",
+    "formidable": "^1.2.1",
     "hbs": "~4.0.4",
     "http-errors": "~1.6.3",
     "less-middleware": "~2.2.1",

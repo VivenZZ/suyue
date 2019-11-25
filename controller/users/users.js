@@ -1,3 +1,7 @@
+// 加密
+const crypto = require('crypto');
+// 表单处理
+const formidable = require('formidable');
 
 class Users {
     constructor() {
@@ -17,6 +21,10 @@ class Users {
     }
     // 注册
     register (req, res, next) {
+        const form = new formidable.IncomingForm();
+        let fileds = form.parse(req,  (err, fields, files) => {
+           return fields;
+        });
         let registerName = req.body.registerName;
         let registerPass = req.body.registerPass;
         let repeatPass = req.body.repeatPass;
@@ -27,6 +35,18 @@ class Users {
                 password: registerPass
             }
         })
+
+
+    }
+    // 加密
+    encryption (password) {
+        // 处理加密~
+        let newPassword = this.Md5(this.Md5(password));
+        return newPassword;
+    }
+    Md5 (password) {
+        const md5 = crypto.createHash('Md5');
+        return md5.update(password).digest('base64');
     }
 }
 module.exports = new Users();

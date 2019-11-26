@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+const mongoose = require( 'mongoose');
 
 const Schema = mongoose.Schema;
 
@@ -14,4 +14,5 @@ adminSchema.index({id: 1});
 const User = mongoose.model('User', adminSchema);
 
 
-export default User
+module.exports = User;
+

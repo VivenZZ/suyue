@@ -6,7 +6,8 @@ const formidable = require('formidable');
 
 class Users {
     constructor() {
-
+        this.register = this.register.bind(this)
+        this.encryption = this.encryption.bind(this)
     }
     // 登录
     login (req, res, next) {
@@ -21,7 +22,7 @@ class Users {
         });
     }
     // 注册
-    register (req, res, next) {
+    async register (req, res, next) {
         const form = new formidable.IncomingForm();
         form.parse(req,  async (err, fields, files) => {
             if (err) {
@@ -33,6 +34,7 @@ class Users {
                 return
             }
             let {registerName, registerPass, repeatPass} = fields;
+            let password = this.encryption(registerPass);
             try {
                 if (!registerName) {
                     throw new Error('用户名参数错误！')
@@ -66,11 +68,10 @@ class Users {
                         message: '该用户已经存在'
                     })
                 } else {
-                    console.log(111)
                     // 用户不存在 注册用户
                     let newUser = {
                         user_name: registerName,
-                        password: repeatPass,
+                        password: password,
                         create_time: `2111/11/12`,
                     };
                     await UserModule.create(newUser);
@@ -104,12 +105,12 @@ class Users {
     // 加密
     encryption (password) {
         // 处理加密~
-        let newPassword = this.Md5(this.Md5(password));
-        return newPassword;
+        const newpassword = this.Md5(this.Md5(password).substr(2, 7) + this.Md5(password));
+        return newpassword
     }
     Md5 (password) {
-        const md5 = crypto.createHash('Md5');
-        return md5.update(password).digest('base64');
+        const md5 = crypto.createHash('md5');
+        return md5.update(password).digest('hex');
     }
 }
 module.exports = new Users();

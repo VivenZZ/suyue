@@ -1,4 +1,6 @@
 const UserModule = require('../../models/users/users');
+// 时间处理
+const sd = require('silly-datetime');
 // 加密
 const crypto = require('crypto');
 // 表单处理
@@ -6,18 +8,75 @@ const formidable = require('formidable');
 
 class Users {
     constructor() {
-        this.register = this.register.bind(this)
-        this.encryption = this.encryption.bind(this)
+        this.login = this.login.bind(this);
+        this.register = this.register.bind(this);
+        this.encryption = this.encryption.bind(this);
     }
     // 登录
     login (req, res, next) {
-        let loginName = req.body.loginName;
-        let loginPass = req.body.loginPass;
-        res.json({
-            success: true,
-            result: {
-                name: loginName,
-                password: loginPass
+        const form = new formidable.IncomingForm();
+        form.parse(req, async (err, fields, files) => {
+            if (err) {
+                res.send({
+                    status: 0,
+                    type: 'FORM_DATA_ERROR',
+                    message: '表单信息错误'
+                });
+                return
+            }
+            let {registerName, registerPass} = fields;
+            let password = this.encryption(registerPass);
+            try {
+                if (!registerName) {
+                    throw new Error('用户名参数错误！')
+                } else if (!registerPass) {
+                    throw new Error('密码参数错误！')
+                }
+
+            } catch (err) {
+                console.log(err.message, err);
+                res.send({
+                    status: 0,
+                    type: 'GET_ERROR_PARAM',
+                    message: err.message,
+                });
+                return
+            }
+            try {
+                // 查询数据库 当前用户是否存在
+                let user = await UserModule.findOne({user_name: registerName});
+                if (user) {
+                    // 用户存在
+                    if (password == user.password){
+                        console.log('登录成功');
+                        res.send({
+                            status: 1,
+                            type: 'USER_HAS_EXIST',
+                            message: '登录成功'
+                        })
+                    } else {
+                        console.log('密码错误');
+                        res.send({
+                            status: 0,
+                            type: 'USER_HAS_EXIST',
+                            message: '密码错误'
+                        })
+                    }
+                } else {
+                    console.log('该用户不存在');
+                    res.send({
+                        status: 0,
+                        type: 'USER_HAS_EXIST',
+                        message: '该用户不存在'
+                    })
+                }
+            } catch (err) {
+                console.log('登录失败', err);
+                res.send({
+                    status: 0,
+                    type: 'REGISTER_ADMIN_FAILED',
+                    message: '登录失败',
+                })
             }
         });
     }
@@ -35,6 +94,7 @@ class Users {
             }
             let {registerName, registerPass, repeatPass} = fields;
             let password = this.encryption(registerPass);
+            console.log(password)
             try {
                 if (!registerName) {
                     throw new Error('用户名参数错误！')
@@ -72,7 +132,7 @@ class Users {
                     let newUser = {
                         user_name: registerName,
                         password: password,
-                        create_time: `2111/11/12`,
+                        create_time: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
                     };
                     await UserModule.create(newUser);
                     res.send({
@@ -89,18 +149,6 @@ class Users {
                 })
             }
         });
-        // let registerName = req.body.registerName;
-        // let registerPass = req.body.registerPass;
-        // let repeatPass = req.body.repeatPass;
-        // res.json({
-        //     success: true,
-        //     result: {
-        //         name: registerName,
-        //         password: registerPass
-        //     }
-        // })
-
-
     }
     // 加密
     encryption (password) {

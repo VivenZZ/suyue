@@ -1,105 +1,47 @@
+const BookModule = require('../../models/books/books');
 
 class Books {
     constructor() {
 
     }
-    getList (req, res, next) {
-        let classify = req.query.classify ? req.query.classify : 0;
-        let orderBy = req.query.orderBy ? req.query.orderBy : 1;
-        let pageNum = req.query.pageNum ? req.query.pageNum : 1;
-        let pageSize = req.query.pageSize ? req.query.pageSize : 20;
-        console.log(`classify:${classify},orderBy:${orderBy},pageNum:${pageNum},pageSize:${pageSize},`);
+    async getList (req, res, next) {
+        const {classify = 0,orderBy = 1,pageNum = 1,pageSize = 20} = req.query;
+
+        let books;
+        if (orderBy == 1) {
+            // 月票
+        } else if (orderBy == 2) {
+            // 热度
+            books = await BookModule.find({}).skip(parseInt((pageNum - 1) * pageSize)).limit(parseInt(pageSize)).sort({'hot': -1}).exec();
+        } else if (orderBy == 3) {
+            // 字数
+            books = await BookModule.find({}).skip(parseInt((pageNum - 1) * pageSize)).limit(parseInt(pageSize)).sort({'numbers': -1}).exec();
+        }
+
         res.json({
             success: true,
             result: {
-                books: [
-                    {
-                        _id: 1092215615165,
-                        name: '极道天魔',
-                        author: '逆苍天',
-                        classify: 1,
-                        description: '讲述一个魔道人雄的故事！',
-                        newChapter: '第三百八十三章 你说的不算！',
-                        upTime: '2019/11/22 19:00',
-                        hot: 20122,
-                        wordNumber: '九十八万',
-                        clickNumber: 211222,
-                        recommend: 1002
-                    },
-                    {
-                        _id: 1092215615165,
-                        name: '极道天魔',
-                        author: '逆苍天',
-                        classify: 1,
-                        description: '讲述一个魔道人雄的故事！',
-                        newChapter: '第三百八十三章 你说的不算！',
-                        upTime: '2019/11/22 19:00',
-                        hot: 20122,
-                        wordNumber: '九十八万',
-                        clickNumber: 211222,
-                        recommend: 1002
-                    }
-                ]
+                books
             }
         });
     };
-    getListById (req, res, next) {
+    async getListById (req, res, next) {
         let bookId = req.params.bookId;
-        console.log(bookId)
+        let books = await BookModule.find({_id: bookId}).exec();
         res.json({
             success: true,
             result: {
-                books: [
-                    {
-                        _id: 1092215615165,
-                        name: '极道天魔',
-                        author: '逆苍天',
-                        description: '讲述一个魔道人雄的故事！',
-                        newChapter: '第三百八十三章 你说的不算！',
-                        upTime: '2019/11/22 19:00',
-                        hot: 20122,
-                        wordNumber: '九十八万',
-                        clickNumber: 211222,
-                        recommend: 1002
-                    }
-                ]
+                books: books
             }
         });
     };
-    getHotList (req, res, next) {
-        let pageSize = req.query.pageSize ? req.query.pageSize : 10;
-        console.log(`pageSize:${pageSize},`);
+    async getHotList (req, res, next) {
+        const {pageSize = 10} = req.query;
+        let books = await BookModule.find({}).skip(0).limit(pageSize).exec();
         res.json({
             success: true,
             result: {
-                books: [
-                    {
-                        _id: 1092215615165,
-                        name: '极道天魔',
-                        author: '逆苍天',
-                        classify: 1,
-                        description: '讲述一个魔道人雄的故事！',
-                        newChapter: '第三百八十三章 你说的不算！',
-                        upTime: '2019/11/22 19:00',
-                        hot: 20122,
-                        wordNumber: '九十八万',
-                        clickNumber: 211222,
-                        recommend: 1002
-                    },
-                    {
-                        _id: 1092215615165,
-                        name: '极道天魔',
-                        author: '逆苍天',
-                        classify: 1,
-                        description: '讲述一个魔道人雄的故事！',
-                        newChapter: '第三百八十三章 你说的不算！',
-                        upTime: '2019/11/22 19:00',
-                        hot: 20122,
-                        wordNumber: '九十八万',
-                        clickNumber: 211222,
-                        recommend: 1002
-                    }
-                ]
+                books: books
             }
         });
     };

@@ -1,4 +1,5 @@
 const BookModule = require('../../models/books/books');
+const Acticle = require('../../models/books/article');
 
 class Books {
     constructor() {
@@ -31,73 +32,37 @@ class Books {
         res.json({
             success: true,
             result: {
-                books: books
+                books
             }
         });
     };
     async getHotList (req, res, next) {
         const {pageSize = 10} = req.query;
-        let books = await BookModule.find({}).skip(0).limit(pageSize).exec();
+        let books = await BookModule.find({}).skip(0).limit(parseInt(pageSize)).exec();
         res.json({
             success: true,
             result: {
-                books: books
+                books
             }
         });
     };
-    getNewList (req, res, next) {
-        let pageSize = req.query.pageSize ? req.query.pageSize : 10;
-        console.log(`pageSize:${pageSize},`);
+    async getNewList (req, res, next) {
+        const {pageSize = 10} = req.query;
+        let books = await BookModule.find({}).skip(0).limit(parseInt(pageSize)).exec();
         res.json({
             success: true,
             result: {
-                books: [
-                    {
-                        _id: 1092215615165,
-                        name: '极道天魔',
-                        author: '逆苍天',
-                        classify: 1,
-                        description: '讲述一个魔道人雄的故事！',
-                        newChapter: '第三百八十三章 你说的不算！',
-                        upTime: '2019/11/22 19:00',
-                        hot: 20122,
-                        wordNumber: '九十八万',
-                        clickNumber: 211222,
-                        recommend: 1002
-                    },
-                    {
-                        _id: 1092215615165,
-                        name: '极道天魔',
-                        author: '逆苍天',
-                        classify: 1,
-                        description: '讲述一个魔道人雄的故事！',
-                        newChapter: '第三百八十三章 你说的不算！',
-                        upTime: '2019/11/22 19:00',
-                        hot: 20122,
-                        wordNumber: '九十八万',
-                        clickNumber: 211222,
-                        recommend: 1002
-                    }
-                ]
+                books
             }
         });
     };
-    getChapter(req, res, next) {
+    async getChapter(req, res, next) {
         let bookId = req.params.bookId;
-        console.log(bookId);
+        let chapter = await Acticle.find({ bookId }).exec();
         res.json({
             success: true,
             result: {
-                chapter: [
-                    {
-                        chapterId: '12382248122',
-                        title: '第一章 我是谁？',
-                    },
-                    {
-                        chapterId: '12382248123',
-                        title: '第二章 你是谁？',
-                    }
-                ]
+                chapter
             }
         })
     };

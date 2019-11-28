@@ -14,7 +14,7 @@ let articleSchema = new mongoose.Schema({
 
 articleSchema.index({id: 1});
 
-const Article = mongoose.model('Article', articleSchema);
+const Article = mongoose.model('bookcontents', articleSchema);
 
 
 module.exports = Article;
